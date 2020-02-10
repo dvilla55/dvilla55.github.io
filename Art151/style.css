@@ -1,0 +1,23 @@
+/* style.css */
+
+html, body {
+  height:100%
+}
+
+body {
+  background:#000000;
+  margin: 0;
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+}
+
+.button {
+  background-color:black;
+  border: 1px solid white;
+  color:white;
+  padding:15px 30px;
+  align-content: justify;
+  text-align:center;
+}
