@@ -86,6 +86,7 @@ var rDown = 500;
 var waitLeft = false;
 var waitRight = false;
 var eMove = 2;
+var eSec;
 
 //Other things
 var powerUps;
@@ -136,7 +137,8 @@ function setup() {
   ebullets = new Group();
   //Enemy things -------------------------------
   enemy = createSprite(400, 100, 20, 20);
-  eAnim = enemy.addAnimation('edle','assets/p/pio0.png','assets/p/pio3.png');
+  eAnim = enemy.addAnimation('edle','assets/p/Lunam-1.png.png','assets/p/pio3.png');
+  eSec = enemy.addAnimation('lunam')
   eAnim.playing = false;
   enemy.setCollider('rectangle', 0, 0, 25, 25);
   routineRay[0] = 0;
@@ -199,7 +201,7 @@ function draw() {
       canvasOne();
       canvasTwo();
       buttonInteract(width/4 - 33, 415, "S  e  l  e  c  t", 3, 90, 380, 2, 0, 0);
-      buttonInteract(width/2 + 75, 415, "V  e  r     0  2", 2, 396, 380, 7, 0, 0);
+      buttonInteract(width/2 + 75, 415, "S  e  l  e  c  t", 4, 396, 380, 2, 0, 0);
       buttonInteract(711, 50, "S  e  t  t  i  n  g  s", 5, 618, 15, 3, 0, 0);
       //buttonInteract(711, 100, "C  r  e  d  i  t  s", 6, 624, 65);
       buttonInteract(711, 100, "B  a  c  k", 1, 643, 65, 4, 0, 0);
@@ -255,13 +257,12 @@ function draw() {
         fadeOut(2);
       }
       break;
-    case 4: // Hard Mode
+    case 4: // Hard Mode ------------------------------------------------------------- EDIT HERE
       if(!hardTrack)
       {
         soundPlay(4);
       }
       track4.setVolume(curVol/100);
-      playerMovement();
       if(!goFlag)
       {
         hardSetup();
@@ -301,7 +302,7 @@ function draw() {
         fadeOut(2);
       }
       break;
-    case 5: // Settings Screen
+    case 5: // Settings Screen ----------------------------------------------------- END EDIT
       doVolume();
       track1.setVolume(curVol/100);
       buttonInteract(701, 460, "B  a  c  k", 2, 633, 425, 5, 0, 0);
@@ -649,6 +650,7 @@ function loadHealth(add) {
 
 // ------------------------------------------------------[easySetup]
 function easySetup() {
+  eAnim.changeFrame(1);
   eMaxHealth = 100;
   eHealth = 0;
   goFlag = true;
@@ -659,6 +661,7 @@ function easySetup() {
 
 // ------------------------------------------------------[hardSetup]
 function hardSetup() {
+  eAnim.changeFrame(0);
   eMaxHealth = 500;
   eHealth = 0;
   goFlag = true;
@@ -670,11 +673,6 @@ function hardSetup() {
 function enemyPlayEasy() {
   enemy.collide(bGroup, hitEn);
   enemy.immovable = true;
-
-  if(routineEnd)
-  {
-    pattern = random(0, 3);
-  }
 
   if(routineEnd) {
     pattern = random(0, 4);
@@ -701,11 +699,11 @@ function enemyPlayEasy() {
     if(enemy.position.x >= 700)
     {
       eMove = -eMove;
-      eAnim.changeFrame(4);
+      eAnim.changeFrame(5);
     }
     else if(enemy.position.x <= 100){
       eMove = -eMove;
-      eAnim.changeFrame(3);
+      eAnim.changeFrame(4);
     }
     enemy.velocity.x = eMove;
 
@@ -784,6 +782,161 @@ function enemyPlayEasy() {
       case 3:
         if(roundNum < 5) {
           while(turnabout < 2) {
+            for(var i = 0; i < 6; i++) {
+              var shot = createSprite(enemy.position.x, enemy.position.y + 10, 5, 5);
+              shot.velocity.x = eSpeed;
+              shot.setSpeed(shot.velocity.x, 0 + ((360/6) *i) + rot);
+              shot.friction = 0;
+              shot.life = eLife;
+              shot.shapeColor = color(255);
+              ebullets.add(shot);
+            }
+            rot+= 10;
+            if(rot >= (360/6))
+            {
+              rot = 0;
+            }
+            turnabout++;
+          }
+          turnabout = 0;
+          roundNum++;
+        }
+        else {
+          routineEnd = true;
+        }
+        break;
+      default:
+        if(roundNum < 6) {
+          for(var i = 0; i < 6; i++) {
+            var shot = createSprite(enemy.position.x, enemy.position.y + 10, 5, 5);
+            shot.velocity.x = eSpeed;
+            shot.setSpeed(shot.velocity.x, 0 + ((360/6) *i) + rot);
+            shot.friction = 0;
+            shot.life = eLife;
+            shot.shapeColor = color(255);
+            ebullets.add(shot);
+          }
+          rot+= 10;
+          if(rot >= (360/6))
+          {
+            rot = 0;
+          }
+          roundNum++;
+        }
+        else {
+          routineEnd = true;
+        }
+        break;
+    }
+  }
+  else
+  {
+    coolDown--;
+  }
+}
+
+// ------------------------------------------------------[enemyPlayHard]
+function enemyPlayHard() {
+  enemy.collide(bGroup, hitEn);
+  enemy.immovable = true;
+
+  if(routineEnd) {
+    pattern = random(0, 4);
+    //get Whole Numbers
+    if(pattern < 1) {
+      pattern = 0;
+    }
+    else if(pattern < 2) {
+      pattern = 1;
+    }
+    else if(pattern < 3) {
+      pattern = 2;
+    }
+    else if(pattern < 4) {
+      pattern = 3;
+    }
+    routineEnd = false;
+    roundNum = 0;
+    turnabout = 0;
+  }
+
+  if(coolDown == 0)
+  {
+    coolDown = setDown;
+    switch(pattern)
+    {
+      case 0:
+        if(roundNum < 20) {
+            for(var i = 0; i < 2; i++)
+            {
+              var shot = createSprite(0, random(0, h), 5, 5);
+              shot.velocity.x = eSpeed;
+              shot.setSpeed(shot.velocity.x, 0);
+              shot.friction = 0;
+              shot.life = eLife + 4;
+              shot.shapeColor = color(255);
+              ebullets.add(shot);
+              shot = createSprite(w, random(0, h), 5, 5);
+              shot.velocity.x = eSpeed;
+              shot.setSpeed(-shot.velocity.x, 0);
+              shot.friction = 0;
+              shot.life = eLife + 4;
+              shot.shapeColor = color(255);
+              ebullets.add(shot);
+            }
+          roundNum++;
+        }
+        else {
+          routineEnd = true;
+        }
+        break;
+      case 1:
+        if(roundNum < 12) {
+          for(var i = 0; i < 24; i++) {
+            var shot = createSprite(enemy.position.x, enemy.position.y + 10, 5, 5);
+            shot.velocity.x = eSpeed - 5;
+            shot.setSpeed(shot.velocity.x, 0 + ((360/12) *i) + rot);
+            shot.friction = 0;
+            shot.life = eLife + 10;
+            shot.shapeColor = color(255);
+            ebullets.add(shot);
+          }
+          rot+= 12;
+          if(rot >= (360/2))
+          {
+            rot = 0;
+          }
+          roundNum++;
+        }
+        else {
+          routineEnd = true;
+        }
+        break;
+      case 2:
+      if(roundNum < 12) {
+        for(var i = 0; i < 24; i++) {
+          var shot = createSprite(enemy.position.x, enemy.position.y + 10, 5, 5);
+          shot.velocity.x = eSpeed - 5;
+          shot.setSpeed(-shot.velocity.x, 0 - ((360/12) *i) - rot);
+          shot.friction = 0;
+          shot.life = eLife + 10;
+          shot.shapeColor = color(255);
+          ebullets.add(shot);
+        }
+        rot+= 12;
+        if(rot >= (360/2))
+        {
+          rot = 0;
+        }
+        roundNum++;
+      }
+        else {
+          routineEnd = true;
+        }
+        break;
+      case 3:
+        if(roundNum < 5) {
+          while(turnabout < 3) {
             for(var i = 0; i < 6; i++) {
               var shot = createSprite(enemy.position.x, enemy.position.y + 10, 5, 5);
               shot.velocity.x = eSpeed;
